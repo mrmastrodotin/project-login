@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SecureApp{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">SecureApp</a>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('live_demo') }}" class="nav-link" style="color: var(--primary);">Security
+                    Console</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('login') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <!-- Login route handles dashboard redirect if logged in -->
+                <!-- In a real app we would have a logout route, but for this simpler guide scope we just use what we have -->
+                {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Flash Messages -->
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+
+        <footer class="footer">
+            <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem; padding: 1rem;">Coded by
+                Chanti</p>
+        </footer>
+
+    </div>
+</body>
+
+</html>

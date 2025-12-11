@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Security Console | SecureApp{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem;">
+    <h1 class="text-center mb-4"><span style="color: var(--primary);">Security</span> Console</h1>
+    <p class="text-center text-muted mb-5">Live Attack Simulation & Defense Verification</p>
+
+    <!-- Console/Terminal Output -->
+    <div class="terminal-window mb-5">
+        <div class="terminal-header">
+            <div class="terminal-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <div class="terminal-title">admin@secureapp:~</div>
+        </div>
+        <div class="terminal-body" id="console-output">
+            <div class="log-line">System ready...</div>
+            <div class="log-line">Waiting for command...</div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="features-grid">
+        <!-- Card 1: Bot Attack -->
+        <div class="feature-card interactive" onclick="runBotAttack()">
+            <div class="feature-icon purple">🤖</div>
+            <h3>Simulate Bot Attack</h3>
+            <p>Attempt to register filling hidden fields.</p>
+            <button class="btn btn-sm btn-outline-primary mt-3">Run Simulation</button>
+        </div>
+
+        <!-- Card 2: Brute Force -->
+        <div class="feature-card interactive" onclick="runBruteForce()">
+            <div class="feature-icon cyan">⚡</div>
+            <h3>Simulate Brute Force</h3>
+            <p>Spam login endpoint with bad passwords.</p>
+            <button class="btn btn-sm btn-outline-primary mt-3">Run Simulation</button>
+        </div>
+
+        <!-- Card 3: Vault Inspection -->
+        <div class="feature-card interactive" onclick="runVaultCheck()">
+            <div class="feature-icon orange">🔒</div>
+            <h3>Inspect Vault</h3>
+            <p>View raw database password storage.</p>
+            <button class="btn btn-sm btn-outline-primary mt-3">Run Inspection</button>
+        </div>
+
+        <!-- Card 4: SQL Injection -->
+        <div class="feature-card interactive" onclick="runSQLInjection()">
+            <div class="feature-icon red">💉</div>
+            <h3>Simulate SQL Injection</h3>
+            <p>Try to bypass login with: ' OR '1'='1</p>
+            <button class="btn btn-sm btn-outline-primary mt-3">Run Simulation</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .terminal-window {
+        background: #1e1e1e;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        font-family: 'Consolas', 'Monaco', monospace;
+        overflow: hidden;
+        border: 1px solid #333;
+    }
+
+    /* Override global grid for this page to fit 4 items */
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        align-items: stretch;
+        /* Cards should be same height */
+    }
+
+    /* Make cards flex containers to align buttons at bottom */
+    .feature-card {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        height: 100%;
+    }
+
+    /* Push button to bottom */
+    .feature-card button {
+        margin-top: auto;
+        width: 100%;
+    }
+
+    .terminal-header {
+        background: #2d2d2d;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .terminal-dots {
+        display: flex;
+        gap: 6px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .dot.red {
+        background: #ff5f56;
+    }
+
+    .dot.yellow {
+        background: #ffbd2e;
+    }
+
+    .dot.green {
+        background: #27c93f;
+    }
+
+    .terminal-title {
+        margin-left: 20px;
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+    .terminal-body {
+        padding: 20px;
+        color: #f0f0f0;
+        height: 300px;
+        overflow-y: auto;
+    }
+
+    .log-line {
+        margin-bottom: 5px;
+    }
+
+    .log-success {
+        color: #4ade80;
+    }
+
+    .log-error {
+        color: #f87171;
+    }
+
+    .log-warn {
+        color: #fbbf24;
+    }
+
+    .log-info {
+        color: #60a5fa;
+    }
+
+    .log-system {
+        border-top: 1px dashed #444;
+        margin-top: 10px;
+        padding-top: 10px;
+        color: #a78bfa;
+        font-style: italic;
+    }
+
+    .interactive {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .interactive:active {
+        transform: scale(0.98);
+    }
+</style>
+
+<script>
+    const consoleDiv = document.getElementById('console-output');
+
+    function log(msg, type = '') {
+        const div = document.createElement('div');
+        div.className = 'log-line ' + type;
+        div.innerHTML = '> ' + msg;
+        consoleDiv.appendChild(div);
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    async function runBruteForce() {
+        consoleDiv.innerHTML = '';
+        log('INITIALIZING BRUTE FORCE ATTACK...', 'log-info');
+
+        let blocked = false;
+
+        for (let i = 1; i <= 8; i++) {
+            await new Promise(r => setTimeout(r, 300)); // Delay for effect
+            try {
+                // Determine if we should fail or succeed based on expected server behavior
+                // (Server blocks after 5)
+                const formData = new FormData();
+                formData.append('email', 'hacker@spam.com');
+                formData.append('password', 'wrongpass');
+
+                const res = await fetch("{{ url_for('login') }}", {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.status === 429) {
+                    log(`Attempt ${i}: [BLOCKED] 429 Too Many Requests`, 'log-error');
+                    blocked = true;
+                    log('--- ATTACK STOPPED ---', 'log-system');
+                    log('Reason: Flask-Limiter detected excessive requests from IP.', 'log-system');
+                    log('Action: IP Address temporarily banned.', 'log-system');
+                    break;
+                } else {
+                    log(`Attempt ${i}: [ALLOWED] Status ${res.status}`, 'log-warn');
+                }
+            } catch (e) {
+                log(`Error: ${e}`, 'log-error');
+            }
+        }
+
+        if (!blocked) log('Warning: Limit not reached (try again if counted globally)', 'log-warn');
+    }
+
+    async function runBotAttack() {
+        consoleDiv.innerHTML = '';
+        log('INITIALIZING BOT AUTOMATION...', 'log-info');
+        log('Targeting hidden field "bot_catcher"...');
+
+        // Use random email to avoid "Email already taken" validation errors
+        // which would cause the form to fail validation BEFORE the bot check runs.
+        const randId = Math.floor(Math.random() * 10000);
+        const email = `bot${randId}@demo.com`;
+
+        const formData = new FormData();
+        formData.append('username', `bot_user_${randId}`);
+        formData.append('email', email);
+        formData.append('password', '123456');
+        formData.append('confirm_password', '123456');
+        formData.append('bot_catcher', 'I am a bot'); // THE TRAP
+
+        // Grab CSRF Token
+        try {
+            const page = await fetch("{{ url_for('register') }}");
+            const text = await page.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const token = doc.querySelector('input[name="csrf_token"]')?.value;
+            if (token) formData.append('csrf_token', token);
+        } catch (e) { }
+
+        log(`Submitting malicious form (User: bot_user_${randId})...`, 'log-info');
+        await new Promise(r => setTimeout(r, 1000));
+
+        const res = await fetch("{{ url_for('register') }}", {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow'
+        });
+
+        if (res.url.includes('login')) {
+            log('Server Response: 200 OK (Redirected to Login)', 'log-success');
+            log('--- ATTACK NEUTRALIZED ---', 'log-system');
+            log('Analysis: The server detected the hidden field was filled.', 'log-system');
+            log('Outcome: Fake success message returned. User was NOT created in DB.', 'log-system');
+            log('Why: Use "Inspect Vault" to verify no "bot_user..." exists.', 'log-system');
+        } else if (new URL(res.url).pathname === "/") {
+            log('Error: Redirected to Home Page.', 'log-error');
+            log('Hint: You are currently LOGGED IN.', 'log-warn');
+            log('Action: Please Logout before testing the Bot Trap (Registration).', 'log-warn');
+        } else {
+            log('Unexpected response.', 'log-error');
+            log(`Status: ${res.status}`, 'log-error');
+            log(`URL: ${res.url}`, 'log-error');
+            if (res.url.includes('register')) {
+                log('Hint: Validation might have failed before Bot Check.', 'log-warn');
+            }
+        }
+    }
+
+    async function runVaultCheck() {
+        consoleDiv.innerHTML = '';
+        log('ACCESSING SECURE DATA VAULT...', 'log-info');
+        await new Promise(r => setTimeout(r, 600));
+
+        try {
+            const res = await fetch('/api/get-hash');
+            const data = await res.json();
+
+            if (data.hash) {
+                log(`User: ${data.username}`);
+                log(`Stored Password:`, 'log-warn');
+                // Break hash for display
+                const hash = data.hash;
+                const p1 = hash.substring(0, 30);
+                const p2 = hash.substring(30);
+                log(`${p1}...`);
+                log(`${p2}`);
+
+                log('--- SECURITY VERIFIED ---', 'log-system');
+                log('Method: Bcrypt Hashing (Work Factor 12).', 'log-system');
+                log('Protection: Plain text passwords are never stored.', 'log-system');
+                log('Result: Even a database leak reveals nothing usable.', 'log-system');
+            } else {
+                log('No users found in database.', 'log-error');
+            }
+        } catch (e) {
+            log('API Error: ' + e, 'log-error');
+        }
+    }
+
+    async function runSQLInjection() {
+        consoleDiv.innerHTML = '';
+        log('INITIALIZING SQL INJECTION ATTACK...', 'log-info');
+
+        const payload = "' OR '1'='1";
+        log(`Payload: ${payload}`, 'log-error');
+        log('Target: /api/search?query=' + encodeURIComponent(payload));
+
+        await new Promise(r => setTimeout(r, 800));
+
+        try {
+            const res = await fetch(`/api/search?query=${encodeURIComponent(payload)}`);
+            const data = await res.json();
+
+            if (data.found) {
+                log('CRITICAL: User Found!', 'log-error');
+                log('Result: VULNERABLE to SQL Injection.', 'log-error');
+            } else {
+                log('Result: Query returned NO results.', 'log-success');
+                log('--- ATTACK BLOCKED ---', 'log-system');
+                log('Analysis: ORM treated payload as literal string.', 'log-system');
+                log('Query Executed: SELECT ... WHERE username = "\' OR \'1\'=\'1"', 'log-system');
+                log('Outcome: Secure. Input sanitized automatically.', 'log-system');
+            }
+        } catch (e) {
+            log('Error: ' + e, 'log-error');
+        }
+    }
+</script>
+{% endblock %}

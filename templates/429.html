@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Alert | SecureApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .security-alert {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+        }
+
+        .icon-shield {
+            font-size: 5rem;
+            color: #ff5f56;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            color: #ff5f56;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .timer {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid #ff5f56;
+            color: #ff5f56;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #ff5f56;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="security-alert">
+        <div class="icon-shield">🛡️</div>
+        <h1>Security Block Triggered</h1>
+        <p>
+            You have exceeded the maximum number of login attempts.
+            <br>
+            For your security, this IP address is temporarily blocked.
+        </p>
+        <p>System Guard: <span class="timer">Active</span></p>
+        <a href="{{ url_for('home') }}" class="btn-back">Return to Safety</a>
+    </div>
+</body>
+
+</html>

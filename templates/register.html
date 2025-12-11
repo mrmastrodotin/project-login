@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Register | SecureApp{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <h2>Create Account</h2>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(placeholder="Choose a username") }}
+            {% for error in form.username.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(placeholder="name@example.com") }}
+            {% for error in form.email.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group hidden-field">
+            {{ form.bot_catcher.label }}
+            {{ form.bot_catcher(tabindex="-1", autocomplete="off") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(placeholder="Create a strong password") }}
+            {% for error in form.password.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(placeholder="Repeat password") }}
+            {% for error in form.confirm_password.errors %}
+            <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+
+        <a href="{{ url_for('login') }}" class="btn-link">Already have an account? Sign In</a>
+    </form>
+</div>
+{% endblock %}
